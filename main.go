@@ -2,11 +2,8 @@ package main
 
 import (
 	"backer/user"
-	"fmt"
 	"log"
-	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -19,7 +16,14 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Println("Connection to database is good")
+	// fmt.Println("Connection to database is good")
+
+	userRepository := user.NewRepository(db)
+	user := user.User{
+		Name: "Test simpan",
+	}
+
+	userRepository.Save(user)
 
 	// var users []user.User
 	// db.Find(&users)
@@ -30,12 +34,20 @@ func main() {
 	// 	fmt.Println("===============")
 	// }
 
-	router := gin.Default()
-	router.GET("/", func(ctx *gin.Context) {
-		var users []user.User
-		db.Find(&users)
+	// router := gin.Default()
+	// router.GET("/", func(ctx *gin.Context) {
+	// 	var users []user.User
+	// 	db.Find(&users)
 
-		ctx.JSON(http.StatusOK, users)
-	})
-	router.Run()
+	// 	ctx.JSON(http.StatusOK, users)
+	// })
+	// router.Run()
+
+	/**
+	* Register endpoint:
+	* 1. input
+	* 2. handler: mapping input to struct
+	* 3. service: mapping struct to User type
+	* 4. repository: save struct User to database
+	 */
 }
