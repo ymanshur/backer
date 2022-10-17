@@ -4,7 +4,9 @@ import (
 	"backer/user"
 	"fmt"
 	"log"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -19,16 +21,21 @@ func main() {
 
 	fmt.Println("Connection to database is good")
 
-	var users []user.User
-	fmt.Println(len(users))
+	// var users []user.User
+	// db.Find(&users)
 
-	db.Find(&users)
+	// for _, user := range users {
+	// 	fmt.Println(user.Name)
+	// 	fmt.Println(user.Email)
+	// 	fmt.Println("===============")
+	// }
 
-	fmt.Println(len(users))
+	router := gin.Default()
+	router.GET("/", func(ctx *gin.Context) {
+		var users []user.User
+		db.Find(&users)
 
-	for _, user := range users {
-		fmt.Println(user.Name)
-		fmt.Println(user.Email)
-		fmt.Println("===============")
-	}
+		ctx.JSON(http.StatusOK, users)
+	})
+	router.Run()
 }
