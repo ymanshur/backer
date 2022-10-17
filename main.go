@@ -19,11 +19,20 @@ func main() {
 	// fmt.Println("Connection to database is good")
 
 	userRepository := user.NewRepository(db)
-	user := user.User{
-		Name: "Test simpan",
-	}
+	userService := user.NewService(userRepository)
 
-	userRepository.Save(user)
+	userInput := user.RegisterUserInput{
+		Name:       "Test simpan dari service",
+		Email:      "contoh@gmail.com",
+		Occupation: "anak band",
+		Password:   "password",
+	}
+	userService.RegisterUser(userInput)
+
+	// user := user.User{
+	// 	Name: "Test simpan",
+	// }
+	// userRepository.Save(user)
 
 	// var users []user.User
 	// db.Find(&users)
