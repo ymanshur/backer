@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"backer/helper"
 	"backer/user"
 	"net/http"
 
@@ -35,5 +36,7 @@ func (h *userHandler) RegisterUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, nil)
 	}
 
-	ctx.JSON(http.StatusOK, newUser)
+	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", newUser)
+
+	ctx.JSON(http.StatusOK, response)
 }
