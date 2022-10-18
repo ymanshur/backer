@@ -41,6 +41,7 @@ func (h *userHandler) RegisterUser(ctx *gin.Context) {
 	newUser, err := h.userService.RegisterUser(input)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
+
 		response := helper.APIResponse("Register account failed", http.StatusInternalServerError, "error", errorMessage)
 		ctx.JSON(http.StatusInternalServerError, response)
 		return
@@ -49,6 +50,7 @@ func (h *userHandler) RegisterUser(ctx *gin.Context) {
 	token, err := h.authService.GenerateToken(newUser.ID)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
+
 		response := helper.APIResponse("Register account failed", http.StatusInternalServerError, "error", errorMessage)
 		ctx.JSON(http.StatusInternalServerError, response)
 		return
@@ -89,7 +91,16 @@ func (h *userHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	formatter := user.FormatUser(loggedInUser, "tokentokentokentokentoken")
+	token, err := h.authService.GenerateToken(loggedInUser.ID)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+
+		response := helper.APIResponse("Login failed", http.StatusInternalServerError, "error", errorMessage)
+		ctx.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	formatter := user.FormatUser(loggedInUser, token)
 
 	response := helper.APIResponse("Successfully logged in", http.StatusOK, "success", formatter)
 	ctx.JSON(http.StatusOK, response)
@@ -117,6 +128,7 @@ func (h *userHandler) CheckEmailAvailability(ctx *gin.Context) {
 	isEmailAvailable, err := h.userService.IsEmailAvailable(input)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
+
 		response := helper.APIResponse("Email checking failed", http.StatusInternalServerError, "error", errorMessage)
 		ctx.JSON(http.StatusInternalServerError, response)
 		return
@@ -163,16 +175,16 @@ func (h *userHandler) UploadAvatar(ctx *gin.Context) {
 	if ctx.SaveUploadedFile(file, path); err != nil {
 		data := gin.H{"is_uploaded": false}
 
-		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
-		ctx.JSON(http.StatusBadRequest, response)
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusInternalServerError, "error", data)
+		ctx.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
 	if _, err := h.userService.SaveAvatar(userID, path); err != nil {
 		data := gin.H{"is_uploaded": false}
 
-		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
-		ctx.JSON(http.StatusBadRequest, response)
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusInternalServerError, "error", data)
+		ctx.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
