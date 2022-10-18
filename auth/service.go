@@ -9,6 +9,10 @@ type Service interface {
 type service struct {
 }
 
+func NewService() *service {
+	return &service{}
+}
+
 var SECRET_KEY = []byte("BWABACKERSTARTUP_53cr3t_k3y")
 
 func (s *service) GenerateToken(userID int) (string, error) {
