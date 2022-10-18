@@ -6,7 +6,6 @@ import (
 	"backer/handler"
 	"backer/helper"
 	"backer/user"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -40,9 +39,9 @@ func main() {
 
 	campaignRepository := campaign.NewRepository(db)
 	campaignService := campaign.NewService(campaignRepository)
+	campaignHandler := handler.NewCampaignHandler(campaignService)
 
-	campaigns, _ := campaignService.GetCampaigns(2)
-	fmt.Println(len(campaigns))
+	api.GET("/campaigns", campaignHandler.GetCampaigns)
 
 	router.Run()
 }
