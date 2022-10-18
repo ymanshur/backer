@@ -3,6 +3,7 @@ package handler
 import (
 	"backer/helper"
 	"backer/user"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -145,7 +146,10 @@ func (h *userHandler) UploadAvatar(ctx *gin.Context) {
 		return
 	}
 
-	path := "images/" + file.Filename
+	// Should be got from JWT token
+	userID := 1
+
+	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
 
 	if ctx.SaveUploadedFile(file, path); err != nil {
 		data := gin.H{"is_uploaded": false}
@@ -154,8 +158,6 @@ func (h *userHandler) UploadAvatar(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, response)
 		return
 	}
-
-	userID := 1
 
 	if _, err := h.userService.SaveAvatar(userID, path); err != nil {
 		data := gin.H{"is_uploaded": false}
