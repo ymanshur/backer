@@ -51,3 +51,13 @@ func (h *userHandler) RegisterUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (h *userHandler) Login(ctx *gin.Context) {
+	/**
+	 * 1. Client input 'email' and 'password', then handler catch it request data
+	 * 2. Handler mapping the input into struct (DTO)
+	 * 3. Passing the mapped struct into service
+	 * 4. Service find email payload with data in users table (database)
+	 * 5. Matching payload password with expect password
+	 */
+}
