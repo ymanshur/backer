@@ -4,6 +4,7 @@ import (
 	"backer/auth"
 	"backer/handler"
 	"backer/user"
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -22,6 +23,24 @@ func main() {
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
+
+	// You can decode the token at https://jwt.io/
+	token, err := authService.ValidateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo5fQ.fZN06gpFhI1qkFrnOjyaHQCABjRgbRS7IYK14aFykq0")
+	if err != nil {
+		// log.Fatalln(err.Error())
+		fmt.Println("ERROR")
+		fmt.Println("ERROR")
+		fmt.Println("ERROR")
+	}
+	if token.Valid {
+		fmt.Println("VALID")
+		fmt.Println("VALID")
+		fmt.Println("VALID")
+	} else {
+		fmt.Println("INVALID")
+		fmt.Println("INVALID")
+		fmt.Println("INVALID")
+	}
 
 	userHandler := handler.NewUserHandler(userService, authService)
 
