@@ -47,7 +47,6 @@ func (h *userHandler) RegisterUser(ctx *gin.Context) {
 	formatter := user.FormatUser(newUser, "tokentokentokentokentoken")
 
 	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatter)
-
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -83,7 +82,6 @@ func (h *userHandler) Login(ctx *gin.Context) {
 	formatter := user.FormatUser(loggedInUser, "tokentokentokentokentoken")
 
 	response := helper.APIResponse("Successfully logged in", http.StatusOK, "success", formatter)
-
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -92,6 +90,38 @@ func (h *userHandler) CheckEmailAvailability(ctx *gin.Context) {
 	 * 1. Get input 'email' from client
 	 * 2. Mapping input into struct
 	 * 3. Pass email value to service
-	 * 4. Service using repository to check email exist
+	 * 4. Service using repository to check email availability
 	 */
+
+	var input user.CheckEmailInput
+
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Email checking failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		ctx.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	isEmailAvailable, err := h.userService.IsEmailAvailable(input)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		response := helper.APIResponse("Email checking failed", http.StatusInternalServerError, "error", errorMessage)
+		ctx.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	data := gin.H{"is_available": isEmailAvailable}
+
+	var metaMessage string
+
+	if isEmailAvailable {
+		metaMessage = "Email is available"
+	} else {
+		metaMessage = "Email has been registered"
+	}
+
+	response := helper.APIResponse(metaMessage, http.StatusOK, "success", data)
+	ctx.JSON(http.StatusOK, response)
 }
