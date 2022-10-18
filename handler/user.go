@@ -135,4 +135,38 @@ func (h *userHandler) UploadAvatar(ctx *gin.Context) {
 	 *      ii. Get user data with the id, then
 	 *      iii. Save user with uploaded avatar (only the path)
 	 */
+
+	file, err := ctx.FormFile("avatar")
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	path := "images/" + file.Filename
+
+	if ctx.SaveUploadedFile(file, path); err != nil {
+		data := gin.H{"is_uploaded": false}
+
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	userID := 1
+
+	if _, err := h.userService.SaveAvatar(userID, path); err != nil {
+		data := gin.H{"is_uploaded": false}
+
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	data := gin.H{"is_uploaded": true}
+
+	response := helper.APIResponse("Avatar successfully uploaded", http.StatusOK, "success", data)
+	ctx.JSON(http.StatusOK, response)
 }
