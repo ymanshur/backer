@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-	// refer https://github. .com/go-sal-driver/mysql#dsn-data-source-name for details
+	// refer https://github.com/go-sal-driver/mysql#dsn-data-source-name for details
 	dsn := "root:@tcp(127.0.0.1:3306)/backer?charset=utf8mb4&parseTime=true&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -39,12 +39,16 @@ func main() {
 	api.POST("/avatars", authMiddleware(userService, authService), userHandler.UploadAvatar)
 
 	campaignRepository := campaign.NewRepository(db)
-	campaigns, err := campaignRepository.FindAll()
+	// campaigns, err := campaignRepository.FindAll()
+	campaigns, err := campaignRepository.FindByUserID(1)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 	for _, campaign := range campaigns {
 		fmt.Println(campaign.Name)
+		if len(campaign.CampaignImages) > 0 {
+			fmt.Println(campaign.CampaignImages[0].FileName)
+		}
 	}
 
 	router.Run()
