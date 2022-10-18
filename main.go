@@ -2,9 +2,11 @@ package main
 
 import (
 	"backer/auth"
+	"backer/campaign"
 	"backer/handler"
 	"backer/helper"
 	"backer/user"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -35,6 +37,15 @@ func main() {
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
 	api.POST("/avatars", authMiddleware(userService, authService), userHandler.UploadAvatar)
+
+	campaignRepository := campaign.NewRepository(db)
+	campaigns, err := campaignRepository.FindAll()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	for _, campaign := range campaigns {
+		fmt.Println(campaign.Name)
+	}
 
 	router.Run()
 }
