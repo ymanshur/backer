@@ -1,9 +1,11 @@
 package main
 
 import (
+	"backer/handler"
 	"backer/user"
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -16,47 +18,14 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	// fmt.Println("Connection to database is good")
-
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
 
-	userInput := user.RegisterUserInput{
-		Name:       "Test simpan dari service",
-		Email:      "contoh@gmail.com",
-		Occupation: "anak band",
-		Password:   "password",
-	}
-	userService.RegisterUser(userInput)
+	router := gin.Default()
+	api := router.Group("/api/v1")
 
-	// user := user.User{
-	// 	Name: "Test simpan",
-	// }
-	// userRepository.Save(user)
+	api.POST("/users", userHandler.RegisterUser)
 
-	// var users []user.User
-	// db.Find(&users)
-
-	// for _, user := range users {
-	// 	fmt.Println(user.Name)
-	// 	fmt.Println(user.Email)
-	// 	fmt.Println("===============")
-	// }
-
-	// router := gin.Default()
-	// router.GET("/", func(ctx *gin.Context) {
-	// 	var users []user.User
-	// 	db.Find(&users)
-
-	// 	ctx.JSON(http.StatusOK, users)
-	// })
-	// router.Run()
-
-	/**
-	* Register endpoint:
-	* 1. input
-	* 2. handler: mapping input to struct
-	* 3. service: mapping struct to User type
-	* 4. repository: save struct User to database
-	 */
+	router.Run()
 }
