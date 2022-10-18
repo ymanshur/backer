@@ -18,7 +18,6 @@ func NewUserHandler(userService user.Service) *userHandler {
 
 func (h *userHandler) RegisterUser(ctx *gin.Context) {
 	/**
-	 * RegisterUser handler:
 	 * 1. Get client input
 	 * 2. Map the input into RegisterUserInput struct (DTO)
 	 * 3. Pass the DTO into service
@@ -60,4 +59,30 @@ func (h *userHandler) Login(ctx *gin.Context) {
 	 * 4. Service find email payload with data in users table (database)
 	 * 5. Matching payload password with expect password
 	 */
+
+	var input user.LoginInput
+
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Login failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		ctx.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	loggedInUser, err := h.userService.Login(input)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+
+		response := helper.APIResponse("Login failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		ctx.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	formatter := user.FormatUser(loggedInUser, "tokentokentokentokentoken")
+
+	response := helper.APIResponse("Successfully logged in", http.StatusOK, "success", formatter)
+
+	ctx.JSON(http.StatusOK, response)
 }
