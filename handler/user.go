@@ -86,3 +86,12 @@ func (h *userHandler) Login(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (h *userHandler) CheckEmailAvailability(ctx *gin.Context) {
+	/**
+	 * 1. Get input 'email' from client
+	 * 2. Mapping input into struct
+	 * 3. Pass email value to service
+	 * 4. Service using repository to check email exist
+	 */
+}
