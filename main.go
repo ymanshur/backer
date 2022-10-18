@@ -4,7 +4,6 @@ import (
 	"backer/auth"
 	"backer/handler"
 	"backer/user"
-	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -22,13 +21,9 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
-
 	authService := auth.NewService()
-	token, _ := authService.GenerateToken(1001)
 
-	fmt.Println(token)
-
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
