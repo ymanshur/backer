@@ -125,3 +125,14 @@ func (h *userHandler) CheckEmailAvailability(ctx *gin.Context) {
 	response := helper.APIResponse(metaMessage, http.StatusOK, "success", data)
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (h *userHandler) UploadAvatar(ctx *gin.Context) {
+	/**
+	 * 1. Get 'avatar' input form from client
+	 * 2. Store the image into "images/"
+	 * 3. Save input into database via service
+	 *      i. Get id of client from JWT token
+	 *      ii. Get user data with the id, then
+	 *      iii. Save user with uploaded avatar (only the path)
+	 */
+}
