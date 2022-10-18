@@ -28,12 +28,16 @@ func (h *userHandler) RegisterUser(ctx *gin.Context) {
 
 	err := ctx.ShouldBindJSON(&input)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, nil)
+		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "error", nil)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
 	}
 
 	newUser, err := h.userService.RegisterUser(input)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, nil)
+		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "error", nil)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
 	}
 
 	// token, err := h.jwtService.GenerateToken()
