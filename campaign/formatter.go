@@ -8,6 +8,7 @@ type CampaignFormatter struct {
 	ImageURL         string `json:"image_url"`
 	GoalAmount       int    `json:"goal_amount"`
 	CurrentAmount    int    `json:"current_amount"`
+	Slug             string `json:"slud"`
 }
 
 func FormatCampaign(campaign Campaign) CampaignFormatter {
@@ -19,6 +20,7 @@ func FormatCampaign(campaign Campaign) CampaignFormatter {
 		ShortDescription: campaign.ShortDescription,
 		GoalAmount:       campaign.GoalAmount,
 		CurrentAmount:    campaign.CurrentAmount,
+		Slug:             campaign.Slug,
 	}
 
 	if len(campaign.CampaignImages) > 0 {
