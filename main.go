@@ -39,17 +39,10 @@ func main() {
 	api.POST("/avatars", authMiddleware(userService, authService), userHandler.UploadAvatar)
 
 	campaignRepository := campaign.NewRepository(db)
-	// campaigns, err := campaignRepository.FindAll()
-	campaigns, err := campaignRepository.FindByUserID(1)
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-	for _, campaign := range campaigns {
-		fmt.Println(campaign.Name)
-		if len(campaign.CampaignImages) > 0 {
-			fmt.Println(campaign.CampaignImages[0].FileName)
-		}
-	}
+	campaignService := campaign.NewService(campaignRepository)
+
+	campaigns, _ := campaignService.GetCampaigns(2)
+	fmt.Println(len(campaigns))
 
 	router.Run()
 }
