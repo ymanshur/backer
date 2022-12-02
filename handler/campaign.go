@@ -4,6 +4,7 @@ import (
 	"backer/campaign"
 	"backer/helper"
 	"backer/user"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -189,5 +190,59 @@ func (h *campaignHandler) UpdateCampaign(ctx *gin.Context) {
 		"success",
 		campaign.FormatCampaign(updatedCampaign),
 	)
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (h *campaignHandler) UploadImage(ctx *gin.Context) {
+	var input campaign.CreateCampaignImageInput
+
+	if err := ctx.ShouldBind(&input); err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse(
+			"Failed to upload campaign image",
+			http.StatusBadRequest,
+			"error",
+			errorMessage,
+		)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+
+		response := helper.APIResponse("Failed to upload campaign image", http.StatusInternalServerError, "error", data)
+		ctx.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	currentUser := ctx.MustGet("currentUser").(user.User)
+
+	path := fmt.Sprintf("campaign-images/%d-%s", currentUser.ID, file.Filename)
+
+	if ctx.SaveUploadedFile(file, path); err != nil {
+		data := gin.H{"is_uploaded": false}
+
+		response := helper.APIResponse("Failed to upload campaign image", http.StatusInternalServerError, "error", data)
+		ctx.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	input.User = currentUser
+
+	if _, err := h.service.SaveCampaignImage(input, path); err != nil {
+		data := gin.H{"is_uploaded": false}
+
+		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", data)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	data := gin.H{"is_uploaded": true}
+
+	response := helper.APIResponse("Campaign image successfully uploaded", http.StatusOK, "success", data)
 	ctx.JSON(http.StatusOK, response)
 }
