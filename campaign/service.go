@@ -119,7 +119,7 @@ func (s *service) SaveCampaignImage(input CreateCampaignImageInput, fileLocation
 		FileName:   fileLocation,
 	}
 
-	newCampaignImage, err := s.repository.CreateImage(campaignImage)
+	newCampaignImage, err := s.repository.SaveImage(campaignImage)
 	if err != nil {
 		return newCampaignImage, err
 	}
