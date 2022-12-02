@@ -3,6 +3,7 @@ package handler
 import (
 	"backer/campaign"
 	"backer/helper"
+	"backer/user"
 	"net/http"
 	"strconv"
 
@@ -85,6 +86,49 @@ func (h *campaignHandler) GetCampaign(ctx *gin.Context) {
 		http.StatusOK,
 		"success",
 		campaign.FormatCampaignDetail(campaignDetail),
+	)
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (h *campaignHandler) CreateCampaign(ctx *gin.Context) {
+	var input campaign.CreateCampaignInput
+
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse(
+			"Failed to create campaign",
+			http.StatusUnprocessableEntity,
+			"error",
+			errorMessage,
+		)
+		ctx.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	currentUser := ctx.MustGet("currentUser").(user.User)
+
+	input.User = currentUser
+
+	newCampaign, err := h.service.CreateCampaign(input)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+
+		response := helper.APIResponse(
+			"Failed to create campaign",
+			http.StatusInternalServerError,
+			"error",
+			errorMessage,
+		)
+		ctx.JSON(http.StatusInternalServerError, response)
+	}
+
+	response := helper.APIResponse(
+		"Campaign successfully created",
+		http.StatusOK,
+		"success",
+		campaign.FormatCampaign(newCampaign),
 	)
 	ctx.JSON(http.StatusOK, response)
 }
