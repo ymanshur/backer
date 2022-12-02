@@ -32,3 +32,11 @@ func (h *campaignHandler) GetCampaigns(ctx *gin.Context) {
 	response := helper.APIResponse("List of campaigns", http.StatusOK, "success", campaign.FormatCampaigns(campaigns))
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (h *campaignHandler) GetCampaign(ctx *gin.Context) {
+	/**
+	 * 1. Handler: mapping 'id' from url into struct input, pass the input into service, format the result for response
+	 * 2. Service: using 'id' at the input for repo param
+	 * 3. Repository: get campaign by id
+	 */
+}
