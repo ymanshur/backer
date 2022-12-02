@@ -1,6 +1,8 @@
 package campaign
 
-import "strings"
+import (
+	"strings"
+)
 
 type CampaignFormatter struct {
 	ID               int    `json:"id"`
@@ -43,19 +45,30 @@ func FormatCampaigns(campaigns []Campaign) []CampaignFormatter {
 }
 
 type CampaignDetailFormatter struct {
-	ID               int      `json:"id"`
-	Name             string   `json:"name"`
-	ShortDescription string   `json:"short_description"`
-	Description      string   `json:"description"`
-	ImageURL         string   `json:"image_url"`
-	GoalAmount       int      `json:"goal_amount"`
-	CurrentAmount    int      `json:"current_amount"`
-	UserID           int      `json:"user_id"`
-	Slug             string   `json:"slug"`
-	Perks            []string `json:"perks"`
+	ID               int                   `json:"id"`
+	Name             string                `json:"name"`
+	ShortDescription string                `json:"short_description"`
+	Description      string                `json:"description"`
+	ImageURL         string                `json:"image_url"`
+	GoalAmount       int                   `json:"goal_amount"`
+	CurrentAmount    int                   `json:"current_amount"`
+	UserID           int                   `json:"user_id"`
+	Slug             string                `json:"slug"`
+	Perks            []string              `json:"perks"`
+	User             CampaignUserFormatter `json:"user"`
+}
+type CampaignUserFormatter struct {
+	Name     string `json:"name"`
+	ImageURL string `json:"image_url"`
 }
 
 func FormatCampaignDetail(campaign Campaign) CampaignDetailFormatter {
+	var perks []string
+
+	for _, perk := range strings.Split(campaign.Perks, ",") {
+		perks = append(perks, strings.TrimSpace(perk))
+	}
+
 	formatter := CampaignDetailFormatter{
 		ID:               campaign.ID,
 		Name:             campaign.Name,
@@ -66,19 +79,16 @@ func FormatCampaignDetail(campaign Campaign) CampaignDetailFormatter {
 		CurrentAmount:    campaign.CurrentAmount,
 		UserID:           campaign.UserID,
 		Slug:             campaign.Slug,
+		Perks:            perks,
+		User: CampaignUserFormatter{
+			Name:     campaign.User.Name,
+			ImageURL: campaign.User.AvatarFileName,
+		},
 	}
 
 	if len(campaign.CampaignImages) > 0 {
 		formatter.ImageURL = campaign.CampaignImages[0].FileName
 	}
-
-	var perks []string
-
-	for _, perk := range strings.Split(campaign.Perks, ",") {
-		perks = append(perks, strings.TrimSpace(perk))
-	}
-
-	formatter.Perks = perks
 
 	return formatter
 }
