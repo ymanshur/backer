@@ -214,7 +214,12 @@ func (h *campaignHandler) UploadCampaignImage(ctx *gin.Context) {
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
 
-		response := helper.APIResponse("Failed to upload campaign image", http.StatusInternalServerError, "error", data)
+		response := helper.APIResponse(
+			"Failed to upload campaign image",
+			http.StatusInternalServerError,
+			"error",
+			data,
+		)
 		ctx.JSON(http.StatusInternalServerError, response)
 		return
 	}
@@ -226,7 +231,12 @@ func (h *campaignHandler) UploadCampaignImage(ctx *gin.Context) {
 	if ctx.SaveUploadedFile(file, path); err != nil {
 		data := gin.H{"is_uploaded": false}
 
-		response := helper.APIResponse("Failed to upload campaign image", http.StatusInternalServerError, "error", data)
+		response := helper.APIResponse(
+			"Failed to upload campaign image",
+			http.StatusInternalServerError,
+			"error",
+			data,
+		)
 		ctx.JSON(http.StatusInternalServerError, response)
 		return
 	}
@@ -236,13 +246,23 @@ func (h *campaignHandler) UploadCampaignImage(ctx *gin.Context) {
 	if _, err := h.service.CreateCampaignImage(input, path); err != nil {
 		data := gin.H{"is_uploaded": false}
 
-		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", data)
+		response := helper.APIResponse(
+			"Failed to upload campaign image",
+			http.StatusBadRequest,
+			"error",
+			data,
+		)
 		ctx.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	data := gin.H{"is_uploaded": true}
 
-	response := helper.APIResponse("Campaign image successfully uploaded", http.StatusOK, "success", data)
+	response := helper.APIResponse(
+		"Campaign image successfully uploaded",
+		http.StatusOK,
+		"success",
+		data,
+	)
 	ctx.JSON(http.StatusOK, response)
 }
