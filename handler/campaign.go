@@ -193,7 +193,7 @@ func (h *campaignHandler) UpdateCampaign(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (h *campaignHandler) UploadImage(ctx *gin.Context) {
+func (h *campaignHandler) UploadCampaignImage(ctx *gin.Context) {
 	var input campaign.CreateCampaignImageInput
 
 	if err := ctx.ShouldBind(&input); err != nil {
@@ -233,7 +233,7 @@ func (h *campaignHandler) UploadImage(ctx *gin.Context) {
 
 	input.User = currentUser
 
-	if _, err := h.service.SaveCampaignImage(input, path); err != nil {
+	if _, err := h.service.CreateCampaignImage(input, path); err != nil {
 		data := gin.H{"is_uploaded": false}
 
 		response := helper.APIResponse("Failed to upload campaign image", http.StatusBadRequest, "error", data)
