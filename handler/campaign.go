@@ -24,12 +24,22 @@ func (h *campaignHandler) GetCampaigns(ctx *gin.Context) {
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
 
-		response := helper.APIResponse("Login failed", http.StatusInternalServerError, "error", errorMessage)
+		response := helper.APIResponse(
+			"Error to get campaigns",
+			http.StatusInternalServerError,
+			"error",
+			errorMessage,
+		)
 		ctx.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	response := helper.APIResponse("List of campaigns", http.StatusOK, "success", campaign.FormatCampaigns(campaigns))
+	response := helper.APIResponse(
+		"List of campaigns",
+		http.StatusOK,
+		"success",
+		campaign.FormatCampaigns(campaigns),
+	)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -39,4 +49,42 @@ func (h *campaignHandler) GetCampaign(ctx *gin.Context) {
 	 * 2. Service: using 'id' at the input for repo param
 	 * 3. Repository: get campaign by id
 	 */
+
+	var input campaign.GetCampaignInput
+
+	if err := ctx.ShouldBindUri(&input); err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse(
+			"Failed to get detail campaign",
+			http.StatusBadRequest,
+			"error",
+			errorMessage,
+		)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	campaignDetail, err := h.service.GetCampaignByID(input)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+
+		response := helper.APIResponse(
+			"Failed to get detail campaign",
+			http.StatusInternalServerError,
+			"error",
+			errorMessage,
+		)
+		ctx.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	response := helper.APIResponse(
+		"Campaign detail",
+		http.StatusOK,
+		"success",
+		campaign.FormatCampaignDetail(campaignDetail),
+	)
+	ctx.JSON(http.StatusOK, response)
 }
