@@ -166,17 +166,21 @@ func (h *campaignHandler) UpdateCampaign(ctx *gin.Context) {
 		return
 	}
 
+	currentUser := ctx.MustGet("currentUser").(user.User)
+
+	inputData.User = currentUser
+
 	updatedCampaign, err := h.service.UpdateCampaign(inputID, inputData)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
 
 		response := helper.APIResponse(
 			"Failed to update campaign",
-			http.StatusInternalServerError,
+			http.StatusBadRequest,
 			"error",
 			errorMessage,
 		)
-		ctx.JSON(http.StatusInternalServerError, response)
+		ctx.JSON(http.StatusBadRequest, response)
 	}
 
 	response := helper.APIResponse(
