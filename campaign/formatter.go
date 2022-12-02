@@ -78,9 +78,13 @@ func FormatCampaignDetail(campaign Campaign) CampaignDetailFormatter {
 	images := []CampaignImageFormatter{}
 
 	for _, image := range campaign.CampaignImages {
+		isPrimary := false
+		if image.IsPrimary == 1 {
+			isPrimary = true
+		}
 		images = append(images, CampaignImageFormatter{
 			ImageURL:  image.FileName,
-			IsPrimary: image.IsPrimary,
+			IsPrimary: isPrimary,
 		})
 	}
 
